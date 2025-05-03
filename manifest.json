@@ -1,7 +1,7 @@
 {
-  "name": "Airplane Information",
-  "short_name": "Airplane Information",
-  "description": "Read BLE offline messages",
+  "name": "Airplanes Information",
+  "short_name": "Airplanes Information",
+  "description": "Read offline BLE messages",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
