@@ -1,9 +1,9 @@
 {
-  "name": "BLE Scanner",
-  "short_name": "BLE Scan",
-  "description": "Leer mensajes BLE offline",
-  "start_url": "./",              //  ← mejor que index.html
-  "scope": "./",                  //  ← explícito
+  "name": "Airplane Information",
+  "short_name": "Airplane Information",
+  "description": "Read BLE offline messages",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#1976d2",
