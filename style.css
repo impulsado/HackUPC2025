@@ -53,7 +53,7 @@
   /* ---------- buttons & inputs ---------- */
   #scan {
     align-self: center;
-    background: #ffcd0d;         /* amarillo 255, 205, 13 */
+    background: #ffcd0d; /* amarillo 255,205,13 */
     color: #000;
     border: none;
     padding: 0.7rem 1.6rem;
@@ -66,17 +66,9 @@
     cursor: pointer;
     transition: background 0.22s, box-shadow 0.22s, transform 0.12s;
   }
-  #scan:hover {
-    background: #ffd84d;
-  }
-  #scan:active {
-    transform: scale(0.97);
-    box-shadow: 0 6px 14px rgba(255, 205, 13, 0.28);
-  }
-  #scan:focus-visible {
-    outline: 2px solid #ffd84d;
-    outline-offset: 2px;
-  }
+  #scan:hover   { background: #ffd84d; }
+  #scan:active  { transform: scale(0.97); box-shadow: 0 6px 14px rgba(255,205,13,.28); }
+  #scan:focus-visible { outline: 2px solid #ffd84d; outline-offset: 2px; }
   
   #filter {
     width: 100%;
@@ -91,14 +83,11 @@
     backdrop-filter: blur(14px) saturate(150%);
     -webkit-backdrop-filter: blur(14px) saturate(150%);
   }
-  #filter::placeholder {
-    color: var(--text-muted);
-  }
+  #filter::placeholder { color: var(--text-muted); }
   
   /* ---------- table ---------- */
-  .table-wrapper {
-    border-radius: var(--radius-lg);
-  }
+  .table-wrapper { border-radius: var(--radius-lg); }
+  
   table {
     width: 100%;
     border-collapse: collapse;
@@ -106,12 +95,10 @@
     backdrop-filter: blur(18px) saturate(150%);
     -webkit-backdrop-filter: blur(18px) saturate(150%);
     border: 1px solid var(--outline);
+    border-radius: var(--radius-lg);     /* redondea header y footer */
+    overflow: hidden;                    /* recorta esquinas */
   }
-  th,
-  td {
-    padding: 0.8rem 1.1rem;
-    text-align: left;
-  }
+  th, td { padding: 0.8rem 1.1rem; text-align: left; }
   th {
     font-size: 0.875rem;
     font-weight: 600;
@@ -121,49 +108,22 @@
     cursor: pointer;
     user-select: none;
   }
-  tr:not(:last-child) td {
-    border-bottom: 1px solid var(--outline);
-  }
-  tr:hover td {
-    background: var(--bg-hover);
-  }
-  th.sort-asc::after {
-    content: " ▲";
-  }
-  th.sort-desc::after {
-    content: " ▼";
-  }
+  tr:not(:last-child) td { border-bottom: 1px solid var(--outline); }
+  tr:hover td            { background: var(--bg-hover); }
+  th.sort-asc::after  { content: " ▲"; }
+  th.sort-desc::after { content: " ▼"; }
   
   /* ---------- status colouring ---------- */
-  td[data-label="Status"] {
-    font-weight: 600;
-  }
-  .status-scheduled {
-    color: var(--text-muted);
-  }
-  .status-boarding {
-    color: var(--accent);
-  }
-  .status-delayed {
-    color: #ff9f0a;
-  }
-  .status-canceled {
-    color: #ff453a;
-  }
-  .status-departed {
-    color: #30d158;
-  }
-  .status-arrived {
-    color: #34c759;
-  }
+  td[data-label="Status"] { font-weight: 600; }
+  .status-scheduled { color: var(--text-muted); }
+  .status-boarding  { color: var(--accent);     }
+  .status-delayed   { color: #ff9f0a;           }
+  .status-canceled  { color: #ff453a;           }
+  .status-departed  { color: #30d158;           }
+  .status-arrived   { color: #34c759;           }
   
   /* ---------- pager ---------- */
-  .pager {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 1rem;
-  }
+  .pager { display:flex; justify-content:center; align-items:center; gap:1rem; }
   .pager-btn {
     background: var(--bg-surface);
     color: var(--text-main);
@@ -174,24 +134,22 @@
     cursor: pointer;
     transition: background 0.2s;
   }
-  .pager-btn:disabled {
-    opacity: 0.4;
-    cursor: default;
-  }
-  .pager-btn:not(:disabled):hover {
-    background: var(--bg-hover);
-  }
+  .pager-btn:disabled         { opacity: 0.4; cursor: default; }
+  .pager-btn:not(:disabled):hover { background: var(--bg-hover); }
   
   /* ---------- responsive cards (mobile) ---------- */
   @media (max-width: 599px) {
-    thead {
-      display: none;
-    }
+    /* fondo negro para distinguir tarjetas */
+    .table-wrapper, table { background: var(--bg-main); }
+  
+    thead { display: none; }
+  
     tr {
       display: block;
       margin-bottom: 1rem;
       border: 1px solid var(--outline);
       border-radius: var(--radius-md);
+      background: var(--bg-surface);         /* tarjeta más clara */
     }
     td {
       display: flex;
@@ -206,11 +164,7 @@
     }
   }
   
-  @media (min-width: 600px) {
-    table {
-      min-width: 480px;
-    }
-  }
+  @media (min-width: 600px) { table { min-width: 480px; } }
   
   /* ---------- log ---------- */
   #log {
@@ -227,12 +181,6 @@
   }
   
   @media (min-width: 768px) {
-    .container {
-      gap: 2rem;
-    }
-    th,
-    td {
-      padding: 0.9rem 1.25rem;
-    }
-  }
-  
+    .container { gap: 2rem; }
+    th, td     { padding: 0.9rem 1.25rem; }
+  }  
