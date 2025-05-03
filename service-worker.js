@@ -34,24 +34,26 @@ self.addEventListener('activate', event =>
 
 /* ---------- Fetch ---------- */
 self.addEventListener('fetch', event => {
-  // solo intercepta peticiones GET
-  if (event.request.method !== 'GET') return;
+  // 0) Sólo nos interesan peticiones http/https del mismo origen
+  if (event.request.method !== 'GET' ||
+      !(event.request.url.startsWith('http://') || event.request.url.startsWith('https://'))) {
+    return;               // deja que el navegador la maneje
+  }
 
+  // --- resto del código sin cambios ---
   event.respondWith(
     caches.match(event.request).then(hit => {
-      if (hit) return hit;                          // 1) Cache hit
+      if (hit) return hit;
 
       return fetch(event.request)
         .then(resp => {
-          // 2) Solo cachea respuestas OK y tipo básico (mismo origen)
           if (resp && resp.ok && resp.type === 'basic') {
-            const clone = resp.clone();             // stream sin consumir
+            const clone = resp.clone();
             caches.open(CACHE_NAME).then(c => c.put(event.request, clone));
           }
           return resp;
         })
         .catch(() => {
-          // 3) Sin red y sin cache: devuelve página offline si era HTML
           if (event.request.destination === 'document')
             return caches.match('./index.html');
         });
