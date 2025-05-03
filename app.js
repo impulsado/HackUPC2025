@@ -18,8 +18,8 @@ let sortAsc = false;
 const bytesToHex = buf => [...new Uint8Array(buf)]
   .map(b => b.toString(16).padStart(2,'0')).join(' ');
 
-const statusText = flags => {
-  switch ((flags >> 1) & 0x07) {
+const statusText = status => {
+  switch (status) {
     case 0:  return 'Scheduled';
     case 1:  return 'Boarding';
     case 2:  return 'Delayed';
@@ -27,6 +27,18 @@ const statusText = flags => {
     case 4:  return 'Departed';
     case 5:  return 'Arrived';
     default: return 'Unknown';
+  }
+};
+
+const statusClass = status => {
+  switch (status) {
+    case 0:  return 'status-scheduled';
+    case 1:  return 'status-boarding';
+    case 2:  return 'status-delayed';
+    case 3:  return 'status-canceled';
+    case 4:  return 'status-departed';
+    case 5:  return 'status-arrived';
+    default: return '';
   }
 };
 
@@ -48,7 +60,7 @@ function parsePacket(dv) {
   if (len >= off + 4)      epoch = dv.getUint32(off,true);
   else if (len >= off + 2) epoch = dv.getUint16(off,true);
 
-  return { airline, flightNo, gateChr, gateNum, flags, status, epoch, raw };
+  return { airline, flightNo, gateChr, gateNum, status, epoch, raw };
 }
 
 const codeOf = p => `${p.airline}${String(p.flightNo).padStart(4,'0')}`;
@@ -64,7 +76,6 @@ function renderTable() {
       case 'flight': return mul * a[0].localeCompare(b[0]);
       case 'gate':   return mul * (`${da.gateChr}${da.gateNum}`.localeCompare(`${db.gateChr}${db.gateNum}`));
       case 'status': return mul * (da.status - db.status);
-      case 'flags':  return mul * (da.flags - db.flags);
       default:       return mul * (da.epoch - db.epoch);
     }
   });
@@ -77,8 +88,7 @@ function renderTable() {
       <td data-label="Flight">${code}</td>
       <td data-label="Gate">${d.gateChr}${d.gateNum}</td>
       <td data-label="Last update">${new Date(d.epoch*1000).toLocaleString()}</td>
-      <td data-label="Status">${statusText(d.flags)}</td>
-      <td data-label="Flags">0x${d.flags.toString(16).padStart(2,'0')}</td>`;
+      <td data-label="Status" class="${statusClass(d.status)}">${statusText(d.status)}</td>`;
     tbody.appendChild(tr);
   }
 }

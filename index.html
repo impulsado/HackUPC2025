@@ -1,39 +1,44 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Vueling Blackout</title>
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#0a84ff">
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <main class="container">
-    <h1>Vueling Blackout</h1>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Vueling Blackout</title>
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#0a84ff" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
 
-    <button id="scan" aria-live="polite">Connect</button>
+  <body>
+    <main class="container">
+      <!-- Título perfectamente centrado -->
+      <h1 class="app-title">Vueling Blackout</h1>
 
-    <input id="filter" placeholder="Filter flight (e.g. VY0123)" autocomplete="off" />
+      <button id="scan" aria-live="polite">Connect</button>
 
-    <div class="table-wrapper">
-      <table id="table" aria-label="Flight updates">
-        <thead>
-          <tr>
-            <th data-col="flight">Flight</th>
-            <th data-col="gate">Gate</th>
-            <th data-col="time">Last update</th>
-            <th data-col="status">Status</th>
-            <th data-col="flags">Flags</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
+      <input
+        id="filter"
+        placeholder="Filter flight (e.g. VY0123)"
+        autocomplete="off"
+      />
 
-    <pre id="log" aria-label="Event log"></pre>
-  </main>
+      <div class="table-wrapper">
+        <table id="table" aria-label="Flight updates">
+          <thead>
+            <tr>
+              <th data-col="flight">Flight</th>
+              <th data-col="gate">Gate</th>
+              <th data-col="time">Last&nbsp;update</th>
+              <th data-col="status">Status</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
 
-  <script type="module" src="app.js"></script>
-</body>
+      <pre id="log" aria-label="Event log"></pre>
+    </main>
+
+    <script type="module" src="app.js"></script>
+  </body>
 </html>
