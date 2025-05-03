@@ -1,14 +1,15 @@
 :root {
-    /* Dark‑Pro palette */
+    /* Colores principales */
     --bg-main: #000;
     --bg-surface: rgba(28, 28, 30, 0.8);
     --bg-hover: rgba(44, 44, 46, 0.88);
     --outline: rgba(255, 255, 255, 0.08);
+  
     --accent: #0a84ff;
-    --accent-hover: #5ac8ff;
     --text-main: #fff;
     --text-muted: #9d9d9d;
   
+    /* Radios */
     --radius-lg: 18px;
     --radius-md: 14px;
     --radius-sm: 10px;
@@ -52,8 +53,8 @@
   /* ---------- buttons & inputs ---------- */
   #scan {
     align-self: center;
-    background: var(--accent);
-    color: #fff;
+    background: #ffcd0d;         /* amarillo 255, 205, 13 */
+    color: #000;
     border: none;
     padding: 0.7rem 1.6rem;
     border-radius: var(--radius-lg);
@@ -61,19 +62,19 @@
     font-weight: 600;
     backdrop-filter: blur(10px) saturate(160%);
     -webkit-backdrop-filter: blur(10px) saturate(160%);
-    box-shadow: 0 10px 18px rgba(10, 132, 255, 0.28);
+    box-shadow: 0 10px 18px rgba(255, 205, 13, 0.28);
     cursor: pointer;
     transition: background 0.22s, box-shadow 0.22s, transform 0.12s;
   }
   #scan:hover {
-    background: var(--accent-hover);
+    background: #ffd84d;
   }
   #scan:active {
     transform: scale(0.97);
-    box-shadow: 0 6px 14px rgba(10, 132, 255, 0.28);
+    box-shadow: 0 6px 14px rgba(255, 205, 13, 0.28);
   }
   #scan:focus-visible {
-    outline: 2px solid var(--accent-hover);
+    outline: 2px solid #ffd84d;
     outline-offset: 2px;
   }
   
@@ -96,12 +97,10 @@
   
   /* ---------- table ---------- */
   .table-wrapper {
-    overflow-x: auto;
     border-radius: var(--radius-lg);
   }
   table {
     width: 100%;
-    min-width: 480px;
     border-collapse: collapse;
     background: var(--bg-surface);
     backdrop-filter: blur(18px) saturate(150%);
@@ -112,7 +111,6 @@
   td {
     padding: 0.8rem 1.1rem;
     text-align: left;
-    vertical-align: top;
   }
   th {
     font-size: 0.875rem;
@@ -147,16 +145,71 @@
     color: var(--accent);
   }
   .status-delayed {
-    color: #ff9f0a; /* amber */
+    color: #ff9f0a;
   }
   .status-canceled {
-    color: #ff453a; /* red */
+    color: #ff453a;
   }
   .status-departed {
-    color: #30d158; /* green */
+    color: #30d158;
   }
   .status-arrived {
-    color: #34c759; /* light‑green */
+    color: #34c759;
+  }
+  
+  /* ---------- pager ---------- */
+  .pager {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+  }
+  .pager-btn {
+    background: var(--bg-surface);
+    color: var(--text-main);
+    border: none;
+    padding: 0.5rem 0.9rem;
+    border-radius: var(--radius-sm);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .pager-btn:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+  .pager-btn:not(:disabled):hover {
+    background: var(--bg-hover);
+  }
+  
+  /* ---------- responsive cards (mobile) ---------- */
+  @media (max-width: 599px) {
+    thead {
+      display: none;
+    }
+    tr {
+      display: block;
+      margin-bottom: 1rem;
+      border: 1px solid var(--outline);
+      border-radius: var(--radius-md);
+    }
+    td {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0.65rem 0.9rem;
+    }
+    td::before {
+      content: attr(data-label);
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+  }
+  
+  @media (min-width: 600px) {
+    table {
+      min-width: 480px;
+    }
   }
   
   /* ---------- log ---------- */
@@ -182,4 +235,4 @@
       padding: 0.9rem 1.25rem;
     }
   }
-      
+  

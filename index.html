@@ -4,14 +4,17 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Vueling Blackout</title>
+
+    <!-- PWA -->
     <link rel="manifest" href="manifest.json" />
     <meta name="theme-color" content="#0a84ff" />
+
+    <!-- Estilos -->
     <link rel="stylesheet" href="style.css" />
   </head>
 
   <body>
     <main class="container">
-      <!-- Título perfectamente centrado -->
       <h1 class="app-title">Vueling Blackout</h1>
 
       <button id="scan" aria-live="polite">Connect</button>
@@ -36,9 +39,17 @@
         </table>
       </div>
 
+      <!-- Paginación -->
+      <div class="pager">
+        <button id="prev" class="pager-btn" aria-label="Previous page">◀</button>
+        <span id="pageInfo">1 / 1</span>
+        <button id="next" class="pager-btn" aria-label="Next page">▶</button>
+      </div>
+
       <pre id="log" aria-label="Event log"></pre>
     </main>
 
+    <!-- Lógica -->
     <script type="module" src="app.js"></script>
   </body>
 </html>
