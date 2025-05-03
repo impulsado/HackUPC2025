@@ -83,18 +83,28 @@ thead.addEventListener('click', ev=>{
   renderTable();
 });
 
+let scanner = null;
+
 /* ─── BLE connection‑less scan ─────────────────────────────── */
 scanBtn.addEventListener('click', async () => {
+  if (scanner) {                    // 2º clic → parar
+    scanner.stop();
+    scanner = null;
+    scanBtn.textContent = 'Scan';
+    return;
+  }
+  
+  /*
   if (!('bluetooth' in navigator) || !('requestLEScan' in navigator.bluetooth)) {
     alert('Web‑Bluetooth LE scan not supported on this device/browser');
     return;
   }
-
+*/
   try {
+    scanner = true;
     const scan = await navigator.bluetooth.requestLEScan({
-      filters: [{ name: NAME_FILTER }],
-      keepRepeated: true,
-      acceptAllAdvertisements: true
+      acceptAllAdvertisements: true,
+      keepRepeated: true
     });
     log('🔍 Scanning… (stop when you close the page)');
 
