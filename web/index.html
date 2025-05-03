@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BLE Flights Monitor</title>
+  <style>
+    body   { font-family: system-ui, sans-serif; margin: 1rem; }
+    table  { border-collapse: collapse; width: 100%; max-width: 500px; }
+    th, td { border: 1px solid #ccc; padding: .4rem .6rem; text-align: left; }
+    th    { background: #f4f4f4; }
+    #log  { white-space: pre-wrap; border: 1px solid #dde; padding: .5rem; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>BLE Flights Monitor</h1>
+
+  <button id="scan">Escanear y conectar</button>
+
+  <table id="table">
+    <thead>
+      <tr><th>Vuelo</th><th>Puerta</th><th>Hora (local)</th><th>Flags</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <!-- Log opcional para ver eventos sin procesar -->
+  <pre id="log"></pre>
+
+  <script src="app.js"></script>
+</body>
+</html>
