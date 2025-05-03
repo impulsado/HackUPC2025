@@ -1,9 +1,12 @@
 const CACHE_NAME = 'ble-app-v1';
 const ASSETS = [
   './',
-  './index.html',
+  '.index.html',
   './app.js',
-  './manifest.json'
+  './manifest.json',
+  './service-worker.js',
+  './icons/icon-192.png',
+  './icons/icon-512.png'
 ];
 
 self.addEventListener('install', e =>
