@@ -1,98 +1,113 @@
-/* UUIDs --------------------------------------------------------- */
+/* ─── BLE UUIDs ─────────────────────────────────────────────── */
 const SERVICE_UUID        = 'f9e47602-1b6d-4e3d-bc39-9a13b6a9c340';
 const CHARACTERISTIC_UUID = 'c3a5d703-44c7-4fd2-9f19-dfc1c7d95a1a';
 
-/* DOM ----------------------------------------------------------- */
+/* ─── DOM ───────────────────────────────────────────────────── */
 const scanBtn = document.getElementById('scan');
+const filterI = document.getElementById('filter');
+const thead   = document.querySelector('#table thead');
 const tbody   = document.querySelector('#table tbody');
 const logPre  = document.getElementById('log');
 
-/* Mapas --------------------------------------------------------- */
-const flights = new Map();   // datos por vuelo
-const rows    = new Map();   // <tr> por vuelo
+/* ─── State ─────────────────────────────────────────────────── */
+const flights = new Map();   // flightCode → packet
+let sortCol = 'time';
+let sortAsc = false;
 
-/* Helpers ------------------------------------------------------- */
-const codeFrom = p =>
-  `${p.airline}${String(p.flightNo).padStart(4, '0')}`;
+/* ─── Helpers ───────────────────────────────────────────────── */
+const bytesToHex = buf => [...new Uint8Array(buf)]
+  .map(b => b.toString(16).padStart(2,'0')).join(' ');
 
 function parsePacket(dv) {
-  const len = dv.byteLength;          // Bytes reales recibidos
+  const len = dv.byteLength;
   const txt = new TextDecoder();
+  const raw = bytesToHex(dv.buffer.slice(dv.byteOffset, dv.byteOffset+len));
 
-  // airline → máximo 3 bytes o los que haya
-  const airlineBytes = new Uint8Array(dv.buffer, dv.byteOffset, Math.min(3, len));
-  const airline = txt.decode(airlineBytes).replace(/\0/g, '');
+  const airline  = txt.decode(new Uint8Array(dv.buffer, dv.byteOffset, Math.min(3,len))).trim();
+  let off = 3;
 
-  let offset = 3;
+  const flightNo = len >= off+2 ? dv.getUint16(off,true) : 0; off += 2;
+  const gateChr  = len >  off   ? String.fromCharCode(dv.getUint8(off)) : '?'; off += 1;
+  const gateNum  = len >  off   ? dv.getUint8(off) : 0; off += 1;
+  const flags    = len >  off   ? dv.getUint8(off) : 0;
+  const status   = flags & 0x0E; off += 1;
 
-  const flightNo = len >= offset + 2 ? dv.getUint16(offset, true) : 0;
-  offset += 2;
+  let epoch = 0;
+  if (len >= off+4)      epoch = dv.getUint32(off,true);
+  else if (len >= off+2) epoch = dv.getUint16(off,true);
 
-  const gateChr = len > offset     ? String.fromCharCode(dv.getUint8(offset)) : '?';
-  offset += 1;
-
-  const gateNum = len > offset     ? dv.getUint8(offset) : 0;
-  offset += 1;
-
-  const flags   = len > offset     ? dv.getUint8(offset) : 0;
-  offset += 1;
-
-  const epoch   = len >= offset+4  ? dv.getUint32(offset, true) : 0;
-
-  return { airline, flightNo, gateChr, gateNum, flags, epoch };
+  return { airline, flightNo, gateChr, gateNum, flags, status, epoch, raw };
 }
 
+const codeOf = p => `${p.airline}${String(p.flightNo).padStart(4,'0')}`;
+const log    = m => (logPre.textContent += m + '\n');
 
-function upsertRow(code, d) {
-  let tr = rows.get(code);
-  if (!tr) {
-    tr = document.createElement('tr');
-    rows.set(code, tr);
+/* ─── Rendering ─────────────────────────────────────────────── */
+function renderTable() {
+  const query = filterI.value.trim().toUpperCase();
+
+  const rows = [...flights.entries()].sort((a,b)=>{
+    const da=a[1], db=b[1], mul=sortAsc?1:-1;
+    switch(sortCol){
+      case 'flight': return mul*a[0].localeCompare(b[0]);
+      case 'gate':   return mul*(`${da.gateChr}${da.gateNum}`.localeCompare(`${db.gateChr}${db.gateNum}`));
+      case 'status': return mul*(da.status-db.status);
+      case 'flags':  return mul*(da.flags -db.flags);
+      default:       return mul*(da.epoch -db.epoch);
+    }
+  });
+
+  tbody.innerHTML='';
+  for(const [code,d] of rows){
+    if(query && !code.startsWith(query)) continue;
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td>${code}</td>
+      <td>${d.gateChr}${d.gateNum}</td>
+      <td>${new Date(d.epoch*1000).toLocaleString()}</td>
+      <td>${d.status}</td>
+      <td>0x${d.flags.toString(16).padStart(2,'0')}</td>
+      <td>${d.raw}</td>`;
     tbody.appendChild(tr);
   }
-  tr.innerHTML = `
-    <td>${code}</td>
-    <td>${d.gateChr}${d.gateNum}</td>
-    <td>${d.timestamp.toLocaleString()}</td>
-    <td>${d.flags}</td>`;
 }
 
-function log(msg) {
-  logPre.textContent += msg + '\n';
-}
+filterI.addEventListener('input', renderTable);
 
-/* BLE ----------------------------------------------------------- */
-scanBtn.addEventListener('click', async () => {
-  if (!('bluetooth' in navigator)) {
-    alert('Este navegador no soporta Web‑Bluetooth.');
-    return;
-  }
-  try {
-    const device = await navigator.bluetooth.requestDevice({
-      filters: [{ name: 'VuelingGATT' }],
-      optionalServices: [SERVICE_UUID]
+thead.addEventListener('click', ev=>{
+  const th=ev.target.closest('th'); if(!th) return;
+  const col=th.dataset.col;
+  if(col===sortCol) sortAsc=!sortAsc; else {sortCol=col; sortAsc=true;}
+  thead.querySelectorAll('th').forEach(el=>el.classList.remove('sort-asc','sort-desc'));
+  th.classList.add(sortAsc?'sort-asc':'sort-desc');
+  renderTable();
+});
+
+/* ─── BLE workflow ──────────────────────────────────────────── */
+scanBtn.addEventListener('click', async ()=>{
+  if(!('bluetooth'in navigator)){alert('Web‑Bluetooth not supported');return;}
+  try{
+    const device=await navigator.bluetooth.requestDevice({
+      filters:[{name:'VuelingGATT'}],
+      optionalServices:[SERVICE_UUID]
     });
-    log(`▶ Dispositivo seleccionado: ${device.name || device.id}`);
+    log(`▶ Selected: ${device.name||device.id}`);
 
-    const server = await device.gatt.connect();
-    const service = await server.getPrimaryService(SERVICE_UUID);
-    const ch = await service.getCharacteristic(CHARACTERISTIC_UUID);
+    const server=await device.gatt.connect();
+    const svc   =await server.getPrimaryService(SERVICE_UUID);
+    const ch    =await svc.getCharacteristic(CHARACTERISTIC_UUID);
     await ch.startNotifications();
-    log('📡 Notificaciones activadas');
+    log('📡 Notifications enabled');
 
-    ch.addEventListener('characteristicvaluechanged', ev => {
-      console.log('Bytes recibidos:', ev.target.value.byteLength);
-      const p = parsePacket(ev.target.value);
-      const code = codeFrom(p);
-      flights.set(code, { ...p, timestamp: new Date(p.epoch * 1000) });
-      upsertRow(code, flights.get(code));
+    ch.addEventListener('characteristicvaluechanged', ev=>{
+      try{
+        const p=parsePacket(ev.target.value);
+        flights.set(codeOf(p),p);
+        renderTable();
+      }catch(e){log(`⚠ Parse error: ${e.message}`);}
     });
 
-    device.addEventListener('gattserverdisconnected',
-      () => log('❌ Desconectado'));
+    device.addEventListener('gattserverdisconnected',()=>log('❌ Disconnected'));
 
-  } catch (err) {
-    console.error(err);
-    alert(err.message);
-  }
+  }catch(err){console.error(err);alert(err.message);}
 });
