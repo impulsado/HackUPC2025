@@ -1,6 +1,6 @@
 /* ─── BLE UUIDs ─────────────────────────────────────────────── */
-const NAME_FILTER      = 'VuelingADV'; // nombre del beacon en Advertising
-const MANUF_ID         = 0xDEAD;       // 0xDEAD  (LSB first)
+const SERVICE_UUID        = 'f9e47602-1b6d-4e3d-bc39-9a13b6a9c340';
+const CHARACTERISTIC_UUID = 'c3a5d703-44c7-4fd2-9f19-dfc1c7d95a1a';
 
 /* ─── DOM ───────────────────────────────────────────────────── */
 const scanBtn = document.getElementById('scan');
@@ -83,46 +83,31 @@ thead.addEventListener('click', ev=>{
   renderTable();
 });
 
-let scanner = null;
-
-/* ─── BLE connection‑less scan ─────────────────────────────── */
-scanBtn.addEventListener('click', async () => {
-  if (scanner) {                    // 2º clic → parar
-    scanner.stop();
-    scanner = null;
-    scanBtn.textContent = 'Scan';
-    return;
-  }
-  
-  /*
-  if (!('bluetooth' in navigator) || !('requestLEScan' in navigator.bluetooth)) {
-    alert('Web‑Bluetooth LE scan not supported on this device/browser');
-    return;
-  }
-*/
-  try {
-    scanner = true;
-    const scan = await navigator.bluetooth.requestLEScan({
-      acceptAllAdvertisements: true,
-      keepRepeated: true
+/* ─── BLE workflow ──────────────────────────────────────────── */
+scanBtn.addEventListener('click', async ()=>{
+  if(!('bluetooth'in navigator)){alert('Web‑Bluetooth not supported');return;}
+  try{
+    const device=await navigator.bluetooth.requestDevice({
+      filters:[{name:'VuelingGATT'}],
+      optionalServices:[SERVICE_UUID]
     });
-    log('🔍 Scanning… (stop when you close the page)');
+    log(`▶ Selected: ${device.name||device.id}`);
 
-    navigator.bluetooth.addEventListener('advertisementreceived', ev => {
-      const md = ev.manufacturerData.get(MANUF_ID);
-      if (!md || md.byteLength < 12) return;               // 2 ID + 10 payload
+    const server=await device.gatt.connect();
+    const svc   =await server.getPrimaryService(SERVICE_UUID);
+    const ch    =await svc.getCharacteristic(CHARACTERISTIC_UUID);
+    await ch.startNotifications();
+    log('📡 Notifications enabled');
 
-      const dv = new DataView(md.buffer, md.byteOffset + 2, 10); // salta ID
-      try {
-        const p = parsePacket(dv);
-        flights.set(codeOf(p), p);
+    ch.addEventListener('characteristicvaluechanged', ev=>{
+      try{
+        const p=parsePacket(ev.target.value);
+        flights.set(codeOf(p),p);
         renderTable();
-      } catch (e) {
-        log(`⚠ parse error: ${e.message}`);
-      }
+      }catch(e){log(`⚠ Parse error: ${e.message}`);}
     });
 
-  } catch (err) {
-    console.error(err); alert(err.message);
-  }
+    device.addEventListener('gattserverdisconnected',()=>log('❌ Disconnected'));
+
+  }catch(err){console.error(err);alert(err.message);}
 });

@@ -1,3 +1,4 @@
+
 const CACHE_NAME = 'ble-app-v2';
 const ASSETS = [
   './',
