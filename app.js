@@ -93,7 +93,8 @@ scanBtn.addEventListener('click', async () => {
   try {
     const scan = await navigator.bluetooth.requestLEScan({
       filters: [{ name: NAME_FILTER }],
-      keepRepeated: true
+      keepRepeated: true,
+      acceptAllAdvertisements: true
     });
     log('🔍 Scanning… (stop when you close the page)');
 
