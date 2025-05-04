@@ -20,7 +20,7 @@ def actualitzar_db(sender, appdata):
     
     #timestamp_str = datetime.now() #str(date["year"]+1900) + "-" + str(date["month"]) +"-"+str(date["month_day"]) + " " + str(hour) + ":" + str(min)+":00"
     #print(timestamp_str)
-    timestamp = datetime.now().timestamp()
+    timestamp = int(datetime.now().timestamp())
     print(timestamp)
     connection = sqlite3.connect("./db/vueling.db")
 
