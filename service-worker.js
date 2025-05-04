@@ -18,9 +18,7 @@ self.addEventListener('install', event => {
       .then(cache => cache.addAll(ASSETS))
       .then(() => self.skipWaiting())
       .catch(err => {
-        console.error('🛑 SW install failed:', err);
-        /* Si falló por un solo asset, aún así instala:
-           self.skipWaiting();                                          */
+        console.error('🛑 SW install failed:', err);                                     */
       })
   );
 });
@@ -36,13 +34,11 @@ self.addEventListener('activate', event =>
 
 /* ---------- Fetch ---------- */
 self.addEventListener('fetch', event => {
-  // 0) Sólo nos interesan peticiones http/https del mismo origen
   if (event.request.method !== 'GET' ||
       !(event.request.url.startsWith('http://') || event.request.url.startsWith('https://'))) {
-    return;               // deja que el navegador la maneje
+    return;
   }
 
-  // --- resto del código sin cambios ---
   event.respondWith(
     caches.match(event.request).then(hit => {
       if (hit) return hit;
