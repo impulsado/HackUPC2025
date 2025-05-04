@@ -41,7 +41,7 @@ def main() -> None:
         description="Create the Flights Information SQLite database."
     )
     parser.add_argument(
-        "--db", default="vueling.db", metavar="FILE",
+        "--db", default="db/vueling.db", metavar="FILE",
         help="destination .db file (default: %(default)s)"
     )
     parser.add_argument(

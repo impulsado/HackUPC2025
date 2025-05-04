@@ -174,7 +174,7 @@ def main(args) -> None:
             )
             line_num = 0
             total_bytes = 0
-            for raw in read_db("vueling.db","vueling3"):
+            for raw in read_db("./db/vueling.db","information"):
                 line_num += 1
                 if not raw.strip():
                     continue
