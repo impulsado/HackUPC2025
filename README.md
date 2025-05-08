@@ -1,5 +1,5 @@
 # Airplanes Information
-# 🏆! **Winners** of the Vueling Problem !
+# 🏆! **Winners** of the Vueling Challenge !
 > **Ultra‑light, offline‑first flight board** that keeps running on a tiny Arduino 101 and a phone browser—even if the terminal loses mains power.
 
 Live site → [https://airplanes-information.co](https://airplanes-information.co)
